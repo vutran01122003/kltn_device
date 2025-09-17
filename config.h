@@ -2,14 +2,14 @@
 #include <Arduino.h>
 
 // WiFi & Upload
-#define WIFI_SSID             "P001"
-#define WIFI_PASS             "99990000"
+#define WIFI_SSID             "P002"
+#define WIFI_PASS             "2222"
 
 
 // Upload
-#define UPLOAD_URL            "http://192.168.0.102:3000/upload"
+#define UPLOAD_URL            "http://192.168.0.102:8000/api/upload"
 #define UPLOAD_INTERVAL_MS    10000UL 
-#define METRICS_URL             "http://192.168.0.102:3000/readings"  
+#define METRICS_URL             "http://192.168.0.102:8000/api/readings"  
 #define METRICS_INTERVAL_MS     5000UL   
 
 // Camera quality
