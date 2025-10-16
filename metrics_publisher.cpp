@@ -1,6 +1,6 @@
 #include "metrics_publisher.h"
 #include "config.h"
-
+#include "wifi_config.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
 
@@ -20,7 +20,7 @@ static bool postJson(const char* json, size_t len) {
   http.setConnectTimeout(4000);
   http.setTimeout(6000);
   http.addHeader("Content-Type", "application/json");
-  // Không nằm trong schema nhưng hữu ích cho backend log/định danh
+  
   if (g_deviceId.length()) http.addHeader("X-Device-Id", g_deviceId);
 
   int code = http.POST((uint8_t*)json, len);
@@ -46,11 +46,11 @@ void metrics_set_env(const EnvData& d) {
 void metrics_loop() {
   const uint32_t now = millis();
   if (now - lastSend < METRICS_INTERVAL_MS) return;
-  if (!hasSoil && !hasEnv) return; // chưa có gì để gửi
+  if (!hasSoil && !hasEnv) return;
 
   lastSend = now;
 
-  // Build JSON: chỉ add field có dữ liệu
+  // Build JSON
   char buf[512];
   size_t pos = 0;
 

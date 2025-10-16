@@ -18,17 +18,12 @@ static uint16_t readLightAveraged() {
 }
 
 bool env_sensors_setup() {
-  // DHT
   dht.begin();
 
   // ADC (tùy core esp32, mặc định đã là 12-bit)
 #if defined(ARDUINO_ARCH_ESP32)
   analogReadResolution(12);
 #endif
-
-  // Nếu cần cấu hình attenuation (tùy module ánh sáng):
-  // analogSetPinAttenuation(LIGHT_PIN, ADC_11db); // đo dải rộng hơn (≈3.3V)
-
   // Bỏ lần đọc đầu của DHT cho ổn định
   (void)dht.readTemperature();
   (void)dht.readHumidity();
@@ -41,7 +36,7 @@ bool env_sensors_setup() {
 
 bool env_sensors_read(EnvData& out) {
   float h = dht.readHumidity();
-  float t = dht.readTemperature(); // °C
+  float t = dht.readTemperature(); 
 
   // Nếu lỗi (NaN), thử lại nhẹ
   if (isnan(h) || isnan(t)) {
