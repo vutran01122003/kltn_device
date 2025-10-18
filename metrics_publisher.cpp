@@ -1,7 +1,9 @@
 #include "metrics_publisher.h"
 #include "config.h"
+#include "wifi_config.h"
 
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 
 static String   g_deviceId;
@@ -13,17 +15,24 @@ static uint32_t lastSend = 0;
 static bool postJson(const char* json, size_t len) {
   if (WiFi.status() != WL_CONNECTED) return false;
 
-  WiFiClient client;
+  WiFiClientSecure client;
+  client.setTimeout(6000);
+
+  client.setInsecure();
+
   HTTPClient http;
+
   if (!http.begin(client, METRICS_URL)) return false;
 
   http.setConnectTimeout(4000);
   http.setTimeout(6000);
   http.addHeader("Content-Type", "application/json");
-  // Không nằm trong schema nhưng hữu ích cho backend log/định danh
+  http.addHeader("Accept-Encoding", "identity");
+
   if (g_deviceId.length()) http.addHeader("X-Device-Id", g_deviceId);
 
   int code = http.POST((uint8_t*)json, len);
+
   http.end();
   return code > 0 && code < 400;
 }
@@ -46,11 +55,11 @@ void metrics_set_env(const EnvData& d) {
 void metrics_loop() {
   const uint32_t now = millis();
   if (now - lastSend < METRICS_INTERVAL_MS) return;
-  if (!hasSoil && !hasEnv) return; // chưa có gì để gửi
+  if (!hasSoil && !hasEnv) return;
 
   lastSend = now;
 
-  // Build JSON: chỉ add field có dữ liệu
+  // Build JSON
   char buf[512];
   size_t pos = 0;
 
@@ -84,21 +93,21 @@ void metrics_loop() {
 
   append("{");
 
-  // ENV → airTemperature, airHumidity, lightRaw
+  // ENV: airTemperature, airHumidity, lightRaw
   if (hasEnv) {
     addNumber("airTemperature", lastEnv.temp_c);
     addNumber("airHumidity",    lastEnv.humidity);
     addUInt  ("lightRaw",       lastEnv.light_raw);
   }
 
-  // SOIL → soilTemperature, soilHumidity, N, P, K, ph
+  // SOIL: soilTemperature, soilHumidity, NPK, ph
   if (hasSoil) {
     addNumber("soilTemperature", lastSoil.temperature);
     addNumber("soilHumidity",    lastSoil.humidity);
     addUInt  ("nitrogen",        lastSoil.nitrogen);
     addUInt  ("phosphorus",      lastSoil.phosphorus);
     addUInt  ("potassium",       lastSoil.potassium);
-    addNumber("ph",              lastSoil.ph); // 0..14
+    addNumber("ph",              lastSoil.ph); 
   }
 
   append("}");

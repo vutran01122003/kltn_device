@@ -2,9 +2,10 @@
 #include "config.h"
 
 #include <WiFi.h>
-#include <HTTPClient.h>
 #include "esp_camera.h"
 #include "board_config.h"
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
 
 static String g_deviceId;
 static uint32_t g_lastUpload = 0;
@@ -13,16 +14,24 @@ static bool uploadJpeg(uint8_t* data, size_t len) {
   if (!data || !len) return false;
   if (WiFi.status() != WL_CONNECTED) return false;
 
-  WiFiClient client;
+  WiFiClientSecure client;
+  client.setTimeout(6000);
+
+  client.setInsecure();
+
   HTTPClient http;
-  if (!http.begin(client, UPLOAD_URL)) return false;
+
+  if (!http.begin(client, METRICS_URL)) return false;
 
   http.setConnectTimeout(4000);
   http.setTimeout(6000);
   http.addHeader("Content-Type", "image/jpeg");
+  http.addHeader("Accept-Encoding", "identity");
+
   if (g_deviceId.length()) http.addHeader("X-Device-Id", g_deviceId);
 
   int code = http.POST(data, len);
+
   http.end();
   return code > 0 && code < 400;
 }

@@ -10,6 +10,6 @@ struct SoilData {
   float ph;
 };
 
-bool soil_sensor_setup(); // Initialize UART & RS485
+bool soil_sensor_setup(); 
 bool soil_sensor_read(SoilData& out);    
 void soil_sensor_loop();                
