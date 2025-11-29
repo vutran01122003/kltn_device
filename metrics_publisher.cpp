@@ -16,6 +16,7 @@ static bool postJson(const char* json, size_t len) {
   if (WiFi.status() != WL_CONNECTED) return false;
 
   WiFiClientSecure client;
+  // WiFiClient client;
   client.setTimeout(6000);
 
   client.setInsecure();

@@ -1,6 +1,8 @@
 #pragma once
 #include <Arduino.h>
 
+#define DEVICE_ID          "esp32-01"  
+
 // WiFi 
 #define APP_NS_WIFI          "wifi"    
 #define APP_KEY_SSID         "ssid"
@@ -22,15 +24,17 @@
 
 // Upload
 #define UPLOAD_URL            "https://kltn-api-dpqj.onrender.com/api/health-check/weekly-image"
-#define UPLOAD_INTERVAL_MS    300000UL 
+#define UPLOAD_INTERVAL_MS    60000UL 
 #define METRICS_URL             "https://kltn-api-dpqj.onrender.com/api/readings"  
 #define METRICS_INTERVAL_MS     5000UL   
 
 // Control
-#define CONTROL_URL              "https://kltn-api-dpqj.onrender.com/api/device-control"
-#define RELAY_PIN                   21
-#define CONTROL_FETCH_INTERVAL_MS   5000
-#define RELAY_DEFAULT_ACTIVE_LEVEL  HIGH  // Đổi thành LOW nếu relay của bạn active-low
+#define CONTROL_URL                "https://kltn-api-dpqj.onrender.com/api/device-control"
+#define CONTROL_FETCH_INTERVAL_MS  5000
+#define RELAY_DEFAULT_ACTIVE_LEVEL HIGH
+
+#define LIGHT_RELAY_PIN            47   // bóng đèn
+#define PUMP_RELAY_PIN             21   // máy bơm
 
 // Camera quality
 #define FRAME_SIZE            FRAMESIZE_QVGA  // EX: QVGA/VGA/SVGA...

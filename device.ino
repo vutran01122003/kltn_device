@@ -11,21 +11,17 @@ void setup() {
   Serial.begin(115200);
   delay(200);
 
-  String devId = "esp32-01";
-  devId.replace(":", "");
-  Serial.printf("[SYS] DeviceId=%s\n", devId.c_str());
-
   wifi_config_setup();
 
-  if (!camera_uploader_setup(devId)) {
+  if (!camera_uploader_setup(DEVICE_ID)) {
     Serial.println("[FATAL] Camera init failed");
     while (true) delay(1000);
   }
 
   soil_sensor_setup();
   env_sensors_setup();
-  metrics_setup(devId);
-  relay_control_setup(devId);
+  metrics_setup(DEVICE_ID);
+  relay_control_setup(DEVICE_ID);
 }
 
 void loop() {
@@ -35,9 +31,8 @@ void loop() {
   if (millis() - lastPrint > 5000UL) {
     lastPrint = millis();
     if (wifi_is_connected()) {
-      Serial.printf(LOG_TAG "Connected SSID=%s, IP=%s\n",
-                    wifi_current_ssid().c_str(),
-                    wifi_local_ip().c_str());
+      Serial.printf("[SYS] DeviceId=%s\n", DEVICE_ID);
+      Serial.printf(LOG_TAG "Connected SSID=%s, IP=%s\n", wifi_current_ssid().c_str(), wifi_local_ip().c_str());
     } else {
       Serial.println(LOG_TAG "Not connected");
     }

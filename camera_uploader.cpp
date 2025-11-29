@@ -15,13 +15,14 @@ static bool uploadJpeg(uint8_t* data, size_t len) {
   if (WiFi.status() != WL_CONNECTED) return false;
 
   WiFiClientSecure client;
+  // WiFiClient client;
   client.setTimeout(6000);
 
   client.setInsecure();
 
   HTTPClient http;
 
-  if (!http.begin(client, METRICS_URL)) return false;
+  if (!http.begin(client, UPLOAD_URL)) return false;
 
   http.setConnectTimeout(4000);
   http.setTimeout(6000);
